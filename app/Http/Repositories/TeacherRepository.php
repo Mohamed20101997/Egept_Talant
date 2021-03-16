@@ -2,7 +2,7 @@
 
 namespace App\Http\Repositories;
 
-use App\Http\Interfaces\StaffInterface;
+use App\Http\Interfaces\TeacherInterface;
 use App\Http\Traits\ApiDesignTrait;
 use App\Role;
 use App\User;
@@ -10,10 +10,9 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 
-class StaffRepository implements StaffInterface{
+class TeacherRepository implements TeacherInterface {
 
     use ApiDesignTrait;
-
 
     private $roleModel;
     private $userModel;
@@ -24,7 +23,7 @@ class StaffRepository implements StaffInterface{
 
     }
 
-    public function addStaff($request)
+    public function addTeacher($request)
     {
         $validation = Validator::make($request->all(),[
            'name' => 'required|min:3',
@@ -47,26 +46,26 @@ class StaffRepository implements StaffInterface{
             'role_id' =>  $request->role_id,
         ]);
 
-        return $this->ApiResponse(200 , 'User Was Created');
+        return $this->ApiResponse(200 , 'Teacher Was Created');
     }
 
-    public function allStaff()
+    public function allTeacher()
     {
-        $allStaff = $this->getUser( 'is_staff' , 1 )->with('roleName')->get();
+        $allTeacher = $this->getUser( 'is_teacher' , 1 )->with('roleName')->get();
 
-        return $this->ApiResponse(200 , 'Done' , null , $allStaff);
+        return $this->ApiResponse(200 , 'Done' , null , $allTeacher);
 
     }
 
-    public function updateStaff($request)
+    public function updateTeacher($request)
     {
             $validation = Validator::make($request->all(),[
                 'name' => 'required|min:3',
                 'phone' => 'required',
-                'email' => 'required|email|unique:users,email,'.$request->staff_id,
+                'email' => 'required|email|unique:users,email,'.$request->teacher_id,
                 'password' => 'sometimes|min:8',
                 'role_id' => 'required|exists:roles,id',
-                'staff_id' => 'required|exists:users,id',
+                'teacher_id' => 'required|exists:users,id',
             ]);
 
 
@@ -75,26 +74,26 @@ class StaffRepository implements StaffInterface{
                 return $this->ApiResponse(422 , 'Validation Error', $validation->errors());
             }
 
-            $staff =  $this->getUser( 'is_staff' , 1)->with('roleName')->find($request->staff_id);
+            $teacher =  $this->getUser( 'is_teacher' , 1)->with('roleName')->find($request->teacher_id);
 
-            if($staff)
+            if($teacher)
             {
-                $staff->update(['name' => $request->name,
+                $teacher->update(['name' => $request->name,
                     'phone' =>  $request->phone,
                     'email' =>  $request->email,
                     'password' =>  Hash::make($request->password),
                     'role_id' =>  $request->role_id,
                 ]);
-                return $this->ApiResponse(200 , 'User Was updated' ,null ,$staff);
+                return $this->ApiResponse(200 , 'Teacher Was updated' ,null ,$teacher);
             }
 
-        return $this->ApiResponse(422 , 'This user is not find');
+        return $this->ApiResponse(422 , 'This Teacher  is not find');
     }
 
-    public function deleteStaff($request)
+    public function deleteTeacher($request)
     {
         $validation = Validator::make($request->all(),[
-            'staff_id' => 'required|exists:users,id',
+            'teacher_id' => 'required|exists:users,id',
         ]);
 
         if($validation->fails())
@@ -102,22 +101,23 @@ class StaffRepository implements StaffInterface{
             return $this->ApiResponse(422 , 'Validation Error', $validation->errors());
         }
 
-        $staff =  $this->getUser( 'is_staff' ,  1 )->find($request->staff_id);
+        $teacher =  $this->getUser( 'is_teacher' ,  1 )->find($request->teacher_id);
 
 
-        if($staff){
-            $staff->delete();
+        if($teacher){
 
-            return $this->ApiResponse(200 , 'User Was deleted');
+            $teacher->delete();
+
+            return $this->ApiResponse(200 , 'Teacher Was deleted');
         }
-        return $this->ApiResponse(422 , 'This user is not find');
+        return $this->ApiResponse(422 , 'This Teacher is not find');
     }
 
-    public function specificStaff($request)
+    public function specificTeacher($request)
     {
 
         $validation = Validator::make($request->all(),[
-            'staff_id' => 'required|exists:users,id',
+            'teacher_id' => 'required|exists:users,id',
         ]);
 
         if($validation->fails())
@@ -125,15 +125,13 @@ class StaffRepository implements StaffInterface{
             return $this->ApiResponse(422 , 'Validation Error', $validation->errors());
         }
 
-        $specificStaff = $this->getUser( 'is_staff' , 1 )->with('roleName')->find($request->staff_id);
+        $specificTeacher = $this->getUser( 'is_teacher' , 1 )->with('roleName')->find($request->teacher_id);
 
-
-
-        if($specificStaff)
+        if($specificTeacher)
         {
-            return $this->ApiResponse(200 , 'Done' , null , $specificStaff);
+            return $this->ApiResponse(200 , 'Done' , null , $specificTeacher);
         }
 
-        return $this->ApiResponse(422 , 'This user is not find');
+        return $this->ApiResponse(422 , 'This Teacher is not find');
     }
 }

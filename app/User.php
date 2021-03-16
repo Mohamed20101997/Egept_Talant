@@ -1,14 +1,28 @@
 <?php
 
-namespace App\Models;
+namespace App;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable implements JWTSubject
 {
+
+
+
+    public function roleName(){
+
+        return $this->belongsTo(Role::Class , 'role_id' , 'id');
+    }
+
+    public function studentGroups(){
+
+        return $this->hasMany(StudentGroup::Class , 'student_id' , 'id');
+    }
+
+
 
     use Notifiable;
 
@@ -40,7 +54,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password','phone','role_id',
     ];
 
     /**
@@ -49,7 +63,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token','created_at','updated_at',
     ];
 
     /**

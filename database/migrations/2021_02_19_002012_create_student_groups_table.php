@@ -16,15 +16,15 @@ class CreateStudentGroupsTable extends Migration
         Schema::create('student_groups', function (Blueprint $table) {
             $table->id();
 
-            $table->bigInteger('strudent_id')->unsigned();
-            $table->foreign('strudent_id')->references('id')->on('users')->onDelete('cascade');
+            $table->bigInteger('student_id')->unsigned();
+            $table->foreign('student_id')->references('id')->on('users')->onDelete('cascade');
 
             $table->bigInteger('group_id')->unsigned();
             $table->foreign('group_id')->references('id')->on('groups')->onDelete('cascade');
 
             $table->integer('count');
             $table->double('price');
-            
+
             $table->timestamps();
         });
     }
