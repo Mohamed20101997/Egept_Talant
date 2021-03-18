@@ -60,6 +60,8 @@ class AuthRepository implements AuthInterface{
 
 
 
+
+
     protected function respondWithToken($token)
     {
         $userData =  $this->userModel->find(auth()->user()->id);

@@ -30,6 +30,21 @@ class DatabaseSeeder extends Seeder
             'role_id' => 1,
         ]);
 
+        User::create([
+            'name' => 'Teacher',
+            'email' => 'teacher@gmail.com',
+            'phone' => '01015127991',
+            'password' => Hash::Make('123456'),
+            'role_id' => 2,
+        ]);
+        User::create([
+            'name' => 'Student',
+            'email' => 'student@gmail.com',
+            'phone' => '01015127991',
+            'password' => Hash::Make('123456'),
+            'role_id' => 3,
+        ]);
+
         // $this->call(UserSeeder::class);
     }
 }

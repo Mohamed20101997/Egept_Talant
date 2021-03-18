@@ -2,9 +2,11 @@
 
 namespace App\Http\Repositories;
 
+use App\GroupDate;
 use App\Http\Interfaces\GroupInterface;
 use App\Http\Traits\ApiDesignTrait;
 use App\Group;
+use App\Rules\ValidDay;
 use Illuminate\Support\Facades\Validator;
 
 
@@ -13,9 +15,11 @@ class GroupRepository implements GroupInterface {
     use ApiDesignTrait;
 
     private $groupModel;
-    public function __construct(Group $group)
+    private $GroupDateModel;
+    public function __construct(Group $group , GroupDate $GroupDate)
     {
         $this->groupModel = $group;
+        $this->GroupDateModel = $GroupDate;
 
     }
 
@@ -28,6 +32,7 @@ class GroupRepository implements GroupInterface {
            'body'       => 'required',
            'image'      => 'required',
            'teacher_id' => 'required|exists:users,id',
+           'dates' => ['required',new ValidDay()],
         ]);
 
 
@@ -36,14 +41,36 @@ class GroupRepository implements GroupInterface {
              return $this->ApiResponse(422 , 'Validation Error', $validation->errors());
         }
 
+        /* validate that day is not duplicated*/
+        $dates = $request->dates;
+        for($i=0 ; $i <= count($dates) ; $i++) {
+            for($j=$i+1 ; $j< count($dates)-1; $j++){
+                if($dates[$i][0] == $dates[$j][0]){
 
-        $this->groupModel->create([
+                    return $this->ApiResponse(422 , 'Validation Error', 'Day is exist before');
+
+                }
+            }
+        }
+
+        $group = $this->groupModel->create([
             'name' => $request->name,
             'body' =>  $request->body,
             'image' =>  $request->image,
             'teacher_id' => $request->teacher_id ,
             'created_by' =>  auth()->user()->id,
         ]);
+
+        for($i=0 ; $i< count($dates); $i++){
+             $this->GroupDateModel::create([
+                'day' => $dates[$i][0],
+                'from' => $dates[$i][1],
+                'to'   => $dates[$i][2],
+                'group_id' => $group->id
+            ]);
+        }
+
+
 
         return $this->ApiResponse(200 , 'Group Was Created');
     }
@@ -63,6 +90,7 @@ class GroupRepository implements GroupInterface {
                 'body'       => 'required',
                 'image'      => 'required',
                 'teacher_id' => 'required|exists:users,id',
+                'dates' => ['required',new ValidDay()],
             ]);
 
 
@@ -70,6 +98,18 @@ class GroupRepository implements GroupInterface {
             {
                 return $this->ApiResponse(422 , 'Validation Error', $validation->errors());
             }
+
+        /* validate that day is not duplicated*/
+        $dates = $request->dates;
+        for($i=0 ; $i <= count($dates) ; $i++) {
+            for($j=$i+1 ; $j< count($dates)-1; $j++){
+                if($dates[$i][0] == $dates[$j][0]){
+
+                    return $this->ApiResponse(422 , 'Validation Error', 'Day is exist before');
+
+                }
+            }
+        }
 
             $group =  $this->groupModel->find($request->group_id);
 
@@ -82,6 +122,21 @@ class GroupRepository implements GroupInterface {
                     'teacher_id' => $request->teacher_id ,
                     'created_by' =>  auth()->user()->id,
                 ]);
+
+
+                for($i=0 ; $i< count($dates); $i++){
+                    $GroupDate = $this->GroupDateModel::where('group_id' , $request->group_id)->first();
+                    if($GroupDate){
+                        $GroupDate->update([
+                            'day' => $dates[$i][0],
+                            'from' => $dates[$i][1],
+                            'to'   => $dates[$i][2],
+                            'group_id' => $request->group_id
+                        ]);
+                    }
+
+                }
+
                 return $this->ApiResponse(200 , 'Group Was updated' ,null ,$group);
             }
 

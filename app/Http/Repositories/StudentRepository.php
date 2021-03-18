@@ -48,20 +48,23 @@ class StudentRepository implements StudentInterface {
         for($i = 0 ; $i <= count($groups) ; $i++){
             for($j = $i+1 ; $j < count($groups) ; $j++){
                 if($groups[$i][0] == $groups[$j][0]){
+
                     return $this->ApiResponse(422 , 'Validation Error', 'Group is exist before');
+
                 }
             } // end for
         } //end for
 
         for($i = 0 ; $i < count($groups) ; $i++){
-            if(count($groups[$i]) != 3){
 
+            if(count($groups[$i]) != 3){
                 return $this->ApiResponse(422 , 'Validation Error', 'every group must be three items');
 
             }elseif(! $this->groupModel::find($groups[$i][0])){
 
                 return $this->ApiResponse(422 , 'Validation Error', 'This Group Is Not Exist');
             }
+
         } // end for
 
 

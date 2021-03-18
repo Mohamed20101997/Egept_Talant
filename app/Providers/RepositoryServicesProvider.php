@@ -52,6 +52,11 @@ class RepositoryServicesProvider extends ServiceProvider
           'App\Http\Interfaces\SubscriptionInterface',
           'App\Http\Repositories\SubscriptionRepository'
         );
+
+        $this->app->bind(
+          'App\Http\Interfaces\EndUserInterface',
+          'App\Http\Repositories\EndUserRepository'
+        );
     }
 
     /**

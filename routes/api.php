@@ -9,6 +9,7 @@ use App\Http\Controllers\SessionController;
 use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\SubscriptionController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\EndUserController;
 
 
 Route::group(['middleware' => 'api','prefix' => 'auth'], function ($router) {
@@ -32,7 +33,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'roles:Admin'], function () {
 
 });
 
-Route::group(['prefix' => 'dashboard', 'middleware' => 'roles:Admin.Support.Secretary'], function () {
+Route::group(['prefix' => 'dashboard', 'middleware' => ['jwt.token' ,'roles:Admin.Support.Secretary']], function () {
 
 //    teacher routes
     Route::post('add/teacher', [TeacherController::class,'addTeacher']);
@@ -74,6 +75,22 @@ Route::group(['prefix' => 'dashboard', 'middleware' => 'roles:Admin.Support.Secr
     //    subscription routes
     Route::get('limit/subscription', [SubscriptionController::class,'limitSubscription']);
     Route::get('closed/subscription', [SubscriptionController::class,'closedSubscription']);
+});
+
+Route::group(['prefix' => 'enduser', 'middleware' => ['jwt.token' ,'roles:Student.Teacher']], function () {
+
+    /** Start end user */
+
+    Route::get('groups', [EndUserController::class,'userGroups']);
+    Route::post('complaint', [EndUserController::class,'complaint']);
+    Route::get('schedule', [EndUserController::class,'schedule']);
+    Route::get('timeLine', [EndUserController::class,'timeLine']);
+    Route::get('timeLine', [EndUserController::class,'timeLine']);
+    Route::get('timeLine', [EndUserController::class,'timeLine']);
+
+    Route::post('discussion/add', [EndUserController::class,'addDiscussion']);
+    Route::get('discussion/all', [EndUserController::class,'allDiscussion']);
+    Route::post('discussion/comment', [EndUserController::class,'discussionComment']);
 
 
 });

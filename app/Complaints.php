@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Complaints extends Model
 {
-    protected $fillable = ['title', 'body', 'user_id'];
+    protected $fillable = ['title', 'body', 'user_id','status'];
 
     protected $hidden = ['created_at', 'updated_at', 'user_id'];
 
