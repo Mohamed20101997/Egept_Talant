@@ -10,6 +10,8 @@ use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\SubscriptionController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EndUserController;
+use App\Http\Controllers\ExamController;
+use App\Http\Controllers\StudentExamController;
 
 
 Route::group(['middleware' => 'api','prefix' => 'auth'], function ($router) {
@@ -65,7 +67,6 @@ Route::group(['prefix' => 'dashboard', 'middleware' => ['jwt.token' ,'roles:Admi
     Route::post('delete/session', [SessionController::class,'deleteSession']);
 
 
-
     //    complaint routes
     Route::get('all/complaint', [ComplaintController::class,'allComplaint']);
     Route::get('specific/complaint', [ComplaintController::class,'specificComplaint']);
@@ -91,6 +92,42 @@ Route::group(['prefix' => 'enduser', 'middleware' => ['jwt.token' ,'roles:Studen
     Route::post('discussion/add', [EndUserController::class,'addDiscussion']);
     Route::get('discussion/all', [EndUserController::class,'allDiscussion']);
     Route::post('discussion/comment', [EndUserController::class,'discussionComment']);
+
+    /** Exam Session */
+
+    Route::group(['prefix'=>'exams'], function(){
+
+        Route::get('/', [ExamController::class,'allExams']);
+        Route::get('types', [ExamController::class,'examTypes']);
+        Route::post('status', [ExamController::class,'updateExamStatus']);
+        Route::post('create', [ExamController::class,'creatExam']);
+        Route::post('update', [ExamController::class,'updateExam']);
+        Route::post('delete', [ExamController::class,'deleteExam']);
+    });
+
+
+    /** Questions Session */
+
+    Route::group(['prefix' => 'question'] , function (){
+
+        Route::post('add', [ExamController::class,'addQuestions']);
+        Route::post('update', [ExamController::class,'updateQuestions']);
+        Route::post('delete', [ExamController::class,'deleteQuestions']);
+
+    });
+
+    /** Student Exam Session */
+
+    Route::group(['prefix' => 'student'] , function (){
+
+        Route::get('new', [StudentExamController::class,'newExams']);
+        Route::get('old', [StudentExamController::class,'oldExams']);
+        Route::post('exam', [StudentExamController::class,'newStudentExam']);
+        Route::post('store', [StudentExamController::class,'storeStudentExam']);
+
+    });
+
+
 
 
 });

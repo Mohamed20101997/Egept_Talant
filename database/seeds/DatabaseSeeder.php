@@ -2,7 +2,8 @@
 
 use Illuminate\Database\Seeder;
 use App\Role;
-use \App\User;
+use App\User;
+use  App\ExamType;
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -13,7 +14,6 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $roles  = ['Admin', 'Teacher' , 'Student', 'Support' , 'Secretary'];
-
         foreach($roles as $role){
             Role::create([
                 'name' => $role ,
@@ -22,9 +22,17 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
+        $examTypes  = ['True&False', 'Choices' , 'Essays'];
+        foreach($examTypes as $examType){
+           ExamType::create([
+                'name' => $examType ,
+            ]);
+        }
+
+
         User::create([
             'name' => 'Amdin',
-            'email' => 'admin@gmail.com',
+            'email' => 'admin1@gmail.com',
             'phone' => '01015127991',
             'password' => Hash::Make('123456'),
             'role_id' => 1,
@@ -32,14 +40,14 @@ class DatabaseSeeder extends Seeder
 
         User::create([
             'name' => 'Teacher',
-            'email' => 'teacher@gmail.com',
+            'email' => 'teacher1@gmail.com',
             'phone' => '01015127991',
             'password' => Hash::Make('123456'),
             'role_id' => 2,
         ]);
         User::create([
             'name' => 'Student',
-            'email' => 'student@gmail.com',
+            'email' => 'student1@gmail.com',
             'phone' => '01015127991',
             'password' => Hash::Make('123456'),
             'role_id' => 3,
