@@ -21,4 +21,13 @@ interface ExamInterface{
     public function addQuestions($request);
     public function updateQuestions($request);
     public function deleteQuestions($request);
+
+
+    /** Start Student Exam Sections */
+
+    public function examStudents($request);
+    public function examStudentDetails($request);
+
+
+
 }

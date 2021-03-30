@@ -12,4 +12,8 @@ class Question extends Model
     public function questionImage(){
         return $this->hasOne(QuestionImage::class , 'question_id' , 'id');
     }
+
+    public function answer(){
+        return $this->hasOne(SystemAnswer::class, 'question_id', 'id');
+    }
 }

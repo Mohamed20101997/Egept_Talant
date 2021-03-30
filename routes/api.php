@@ -103,6 +103,8 @@ Route::group(['prefix' => 'enduser', 'middleware' => ['jwt.token' ,'roles:Studen
         Route::post('create', [ExamController::class,'creatExam']);
         Route::post('update', [ExamController::class,'updateExam']);
         Route::post('delete', [ExamController::class,'deleteExam']);
+        Route::get('students', [ExamController::class,'examStudents']);
+        Route::get('studentDetails', [ExamController::class,'examStudentDetails']);
     });
 
 

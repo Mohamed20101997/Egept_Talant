@@ -53,4 +53,15 @@ class ExamController extends Controller
     {
         return $this->examInterface->deleteQuestions($request);
     }
+
+    public function examStudents(Request $request)
+    {
+        return $this->examInterface->examStudents($request);
+    }
+
+    public function examStudentDetails(Request $request)
+    {
+        return $this->examInterface->examStudentDetails($request);
+    }
+
 }

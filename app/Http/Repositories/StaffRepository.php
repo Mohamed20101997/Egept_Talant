@@ -128,7 +128,6 @@ class StaffRepository implements StaffInterface{
         $specificStaff = $this->getUser( 'is_staff' , 1 )->with('roleName')->find($request->staff_id);
 
 
-
         if($specificStaff)
         {
             return $this->ApiResponse(200 , 'Done' , null , $specificStaff);

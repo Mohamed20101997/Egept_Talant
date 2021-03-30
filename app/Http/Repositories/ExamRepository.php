@@ -6,11 +6,14 @@ use App\Exam;
 use App\ExamType;
 use App\Http\Interfaces\ExamInterface;
 use App\Question;
+use App\StudentExam;
+use App\StudentExamAnswer;
 use App\StudentGroup;
 use App\SystemAnswer;
+use App\EssayAnswerCheck;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Traits\ApiDesignTrait;
-use Illuminate\Validation\Rule;
+
 
 class ExamRepository implements ExamInterface
 {
@@ -22,14 +25,21 @@ class ExamRepository implements ExamInterface
     private $studentGroupModel;
     private $questionModel;
     private $systemAnswerModel;
+    private $studentExamModel;
+    private $studentExamAnswerModel;
+    private $esaayMarkedCheckModel;
 
-    public function __construct(ExamType $examType, Exam $exam ,StudentGroup $studentGroup, Question $question ,SystemAnswer $systemAnswer)
+
+    public function __construct(ExamType $examType,EssayAnswerCheck $esaayMarkedCheck,Exam $exam , StudentExamAnswer $studentExamAnswer,StudentGroup $studentGroup, Question $question ,SystemAnswer $systemAnswer ,StudentExam $studentExam)
     {
         $this->examTypeModel = $examType;
         $this->examModel = $exam;
         $this->studentGroupModel = $studentGroup;
         $this->questionModel = $question;
         $this->systemAnswerModel = $systemAnswer;
+        $this->studentExamModel = $studentExam;
+        $this->studentExamAnswerModel = $studentExamAnswer;
+        $this->esaayMarkedCheckModel = $esaayMarkedCheck;
     }
 
 
@@ -251,5 +261,55 @@ class ExamRepository implements ExamInterface
         }
         return $this->ApiResponse(422, 'This Question is not find');
 
+    }
+
+    public function examStudents($request)
+    {
+        $validation = Validator::make($request->all(), [
+            'exam_id' => 'required|exists:exams,id',
+        ]);
+
+        if ($validation->fails()) {
+            return $this->ApiResponse(422, 'Validation Error', $validation->errors());
+        }
+
+        $exam = $this->studentExamModel::where('exam_id' , $request->exam_id)->with('studentData')->get();
+
+        return $this->ApiResponse(200, 'Done', null , $exam);
+    }
+
+    public function examStudentDetails($request)
+    {
+        $validation = Validator::make($request->all(), [
+            'student_exam_id' => 'required|exists:student_exams,id',
+        ]);
+
+        if ($validation->fails()) {
+            return $this->ApiResponse(422, 'Validation Error', $validation->errors());
+        }
+
+        $markedExam = $this->studentExamModel::where('id' , $request->student_exam_id)
+            ->whereHas('examData' , function ($query){
+                $query->whereHas('examType', function($q){
+                   $q->where('is_mark', 1);
+                });
+            })->first();
+
+        if($markedExam){
+            $data = $this->studentExamAnswerModel::where('student_exam_id' , $request->student_exam_id)->with('studentQuestion')->get();
+        }else{
+
+            $examMarked = $this->esaayMarkedCheckModel::where('student_exam_id' , $request->student_exam_id)->first();
+
+            if($examMarked){
+                $data = $this->studentExamAnswerModel::where('student_exam_id' , $request->student_exam_id)->with('studentQuestion')->get();
+
+            }else{
+                $data = $this->studentExamAnswerModel::where('student_exam_id' , $request->student_exam_id)->with('studentQuestion')->get(['id' ,'question_id' ,'answer']);
+
+            }//end of $examMarked check
+        } //end of $markedExam check
+
+        return $this->ApiResponse(200, 'Done', null , $data);
     }
 }

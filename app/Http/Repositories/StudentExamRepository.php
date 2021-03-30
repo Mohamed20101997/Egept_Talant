@@ -48,9 +48,10 @@ class StudentExamRepository implements StudentExamInterface
     public function oldExams()
     {
         $userId = auth()->user()->id;
-        $newExam = $this->examModel::where('close', 1)->whereHas('studentGroups' , function($query) use($userId){
-            $query->where([['student_id' ,$userId], ['count', '>' , 0]]);
-        })->get();
+
+        $newExam = $this->examModel::where('close', 1)->whereHas('studentExams' , function($query) use($userId){
+            return $query->where('student_id' , $userId);
+        });
 
         return $this->apiResponse(200 , 'Done' , null, $newExam) ;
     }
@@ -109,6 +110,7 @@ class StudentExamRepository implements StudentExamInterface
                 $this->studentExamAnswerModel::create([
                    'student_exam_id' => $setStudentExam->id ,
                    'question_id' => $question['question'] ,
+                   'answer' => $question['answer'] ,
                    'degree' => $degree ,
                 ]);
 
@@ -121,10 +123,16 @@ class StudentExamRepository implements StudentExamInterface
             return $this->ApiResponse(200, 'Done' , null , $totalDegree);
 
         }else{
+
             foreach ($request->questions as $question)
             {
-
-
+                $this->studentExamAnswerModel::create([
+                    'student_exam_id' => $setStudentExam->id ,
+                    'question_id' => $question['question'] ,
+                    'answer' => $question['answer'] ,
+                    'degree' =>0
+                ]);
+                return $this->ApiResponse(200, 'Done');
             }
 
         } //end else
